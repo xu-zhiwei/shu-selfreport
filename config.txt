@@ -1,0 +1,8 @@
+operating_system,mac64
+browser,chrome
+student_id,
+password,
+temperature,36.3
+campus,0
+address,上海市宝山区上大路99号上海大学
+
