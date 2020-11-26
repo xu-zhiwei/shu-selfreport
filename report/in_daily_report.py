@@ -52,10 +52,7 @@ def in_daily_report(config: Dict[str, str], is_moring):
     browser.find_element_by_id('fineui_11-inputEl-icon').click()  # 过去14天是否在中高风险地区逗留
     browser.find_element_by_id('fineui_13-inputEl-icon').click()  # 上海同住人员是否有近14天来自中高风险地区的人
     browser.find_element_by_id('p1_XiangXDZ-inputEl').clear()
-    import time
-    time.sleep(3)
     browser.find_element_by_id('p1_XiangXDZ-inputEl').send_keys(config['address'])  # 具体地址
-    time.sleep(3)
     browser.find_element_by_id('p1_QueZHZJC-inputEl').click()
     browser.find_element_by_css_selector('body > ul:nth-child(5) > li:nth-child(2)').click()  # 是否曾与确诊患者有密切接触
     browser.find_element_by_id('fineui_15-inputEl-icon').click()  # 当天是否隔离
@@ -64,11 +61,5 @@ def in_daily_report(config: Dict[str, str], is_moring):
     browser.find_element_by_id('fineui_26-inputEl-icon').click()  # 当天健康码颜色
     browser.find_element_by_id('fineui_27-inputEl-icon').click()  # 截止今天是否连续14天健康码为绿色
     browser.find_element_by_id('p1_ctl00_btnSubmit').click()      # 提交
-    browser.find_element_by_id('fineui_32').click()  # 确认提交
-
-
-
-
-
-
+    browser.find_element_by_id('fineui_34').click()
 
