@@ -1,9 +1,20 @@
+"""
+提供在校学生日报的功能
+"""
+
 from typing import Dict
 from selenium import webdriver
 import os
 
 
 def in_daily_report(config: Dict[str, str], is_moring):
+    """
+    在校学生的日报功能，输入要上报的参数
+    :param config:
+    :param is_moring:
+    :return:
+    """
+
     # 导入浏览器驱动
     browser = None
     abspath = os.path.split(os.path.abspath(__file__))[0]
@@ -62,4 +73,8 @@ def in_daily_report(config: Dict[str, str], is_moring):
     browser.find_element_by_id('fineui_27-inputEl-icon').click()  # 截止今天是否连续14天健康码为绿色
     browser.find_element_by_id('p1_ctl00_btnSubmit').click()      # 提交
     browser.find_element_by_id('fineui_34').click()
+
+    import time
+    time.sleep(3)   # 暂停运行3秒，查看填报结果
+    browser.close()
 
