@@ -63,15 +63,15 @@ def in_daily_report(config: Dict[str, str], is_moring):
     browser.find_element_by_id('p1_TiWen-inputEl').send_keys(config['temperature'])  # 体温填写
     time.sleep(0.3)
 
-    if config['campus'] == 0:  # 当天是否在校
+    if config['campus'] == '0':  # 当天是否在校
         browser.find_element_by_id('fineui_5-inputEl-icon').click()
-    elif config['campus'] == 1:
+    elif config['campus'] == '1':
         browser.find_element_by_id('fineui_6-inputEl-icon').click()
-    elif config['campus'] == 2:
+    elif config['campus'] == '2':
         browser.find_element_by_id('fineui_7-inputEl-icon').click()
-    elif config['campus'] == 3:
+    elif config['campus'] == '3':
         browser.find_element_by_id('fineui_8-inputEl-icon').click()
-    elif config['campus'] == 4:
+    elif config['campus'] == '4':
         browser.find_element_by_id('fineui_9-inputEl-icon').click()
     time.sleep(0.3)
 
