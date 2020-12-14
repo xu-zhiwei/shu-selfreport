@@ -6,6 +6,7 @@ import time
 from smtplib import SMTP_SSL
 from email.mime.text import MIMEText
 from email.header import Header
+import base64
 
 
 def get_cur_time() -> datetime.datetime:
@@ -24,8 +25,9 @@ def get_session(config):
     """
     sess = requests.Session()
     r = sess.get('https://selfreport.shu.edu.cn')
+    state = eval(base64.b64decode(r.url.split('/')[-1]).decode("utf-8"))['state']
     sess.post(r.url, data={'username': config['student_id'], 'password': config['student_password']})
-    return sess
+    return sess, state
 
 
 def send_email(config, cur_date, is_morning):
@@ -33,7 +35,7 @@ def send_email(config, cur_date, is_morning):
     发送填报成功的邮件
     :param config:
     :param cur_date:
-    :param is_moring:
+    :param is_morning:
     :return:
     """
     email_from = config['send_email_id']  # 发送邮箱
@@ -65,16 +67,16 @@ def report(config, cur_date, is_morning):
     :return:
     """
     # 准备好要填报的session和url
-    sess = get_session(config)
+    sess, state = get_session(config)
     t = '1' if is_morning else '2'
     url = 'https://selfreport.shu.edu.cn/XueSFX/HalfdayReport.aspx?day=%s&t=%s' % (cur_date, t)
 
     # 跳转到健康之路
     while True:
         try:
-            sess.get('https://newsso.shu.edu.cn/oauth/authorize?response_type=code&client_id=WUHWfrntnWYHZfzQ5QvXUCVy&'
-                     'redirect_uri=https%3a%2f%2fselfreport.shu.edu.cn%2fLoginSSO.aspx%3fReturnUrl%3d%252fDefault.aspx&'
-                     'scope=1')
+            r = sess.get(f'https://newsso.shu.edu.cn/oauth/authorize?response_type=code&client_id=WUHWfrntnWYHZfzQ5QvXU'
+                         f'CVy&redirect_uri=https%3a%2f%2fselfreport.shu.edu.cn%2fLoginSSO.aspx%3fReturnUrl%3d%252fDefa'
+                         f'ult.aspx&scope=1&state={state}')
             r = sess.get(url)
         except Exception as e:
             print(e)
@@ -164,7 +166,7 @@ def automatic_report(config):
         is_morning = cur_time.hour < 20
 
         # 如果上午的还未填报，且已经到了填报时间
-        if not morning_ok and cur_time.hour >= 8:
+        if not morning_ok and 8 <= cur_time.hour < 20:
             if half_day_report(config, cur_date, is_morning):
                 morning_ok = True
             else:
@@ -173,7 +175,7 @@ def automatic_report(config):
         # 如果下午的还未填报，且已经到了填报时间
         if not evening_ok and cur_time.hour >= 20:
             if half_day_report(config, cur_date, is_morning):
-                morning_ok = True
+                evening_ok = True
             else:
                 break
 
