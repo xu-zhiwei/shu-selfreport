@@ -1,4 +1,5 @@
 # shu-selfreport
+用于http请求学习、web工作原理学习、网站开发学习的项目，欢迎大家讨论交流计算机网络的原理。
 
 ## 分支
 ### web_browser
