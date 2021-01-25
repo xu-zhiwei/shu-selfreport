@@ -181,11 +181,11 @@ def automatic_report(config):
     cur_day = get_cur_time().day
 
     while True:
-        # 填报时间：上午8:00和晚上8:00
+        # 填报时间：上午8:00
         cur_time = get_cur_time()
         cur_date = cur_time.strftime('%Y-%m-%d')
 
-        # 如果上午的还未填报，且已经到了填报时间
+        # 如果还未填报，且已经到了填报时间
         if not ok and 8 <= cur_time.hour:
             if daily_report(config, cur_date):
                 ok = True
