@@ -43,8 +43,8 @@ def send_email(config, cur_date):
     hostname = config['send_email_hostname']  # smtp服务器地址
     login = config['send_email_id']  # 发送邮箱的用户名
     password = config['send_email_password']  # 发送邮箱的密码，即开启smtp服务得到的授权码
-    subject = '%s%s - 填报成功！' % (cur_date, config['student_id'])  # 邮件主题
-    text = '%s%s - 填报成功！' % (cur_date, config['student_id'])  # 邮件正文内容
+    subject = '%s %s - 填报成功！' % (cur_date, config['student_id'])  # 邮件主题
+    text = '%s %s - 填报成功！' % (cur_date, config['student_id'])  # 邮件正文内容
 
     smtp = SMTP_SSL(hostname)  # SMTP_SSL默认使用465端口
     smtp.login(login, password)
@@ -171,7 +171,7 @@ def daily_report(config, cur_date) -> bool:
         count += 1
         if count == 10:  # 如果连报10次均为成功，中断程序运行，防止bug
             return False
-    print('%s%s - 填报成功！' % (cur_date, config['student_id']))
+    print('%s %s - 填报成功！' % (cur_date, config['student_id']))
     send_email(config, cur_date)
     return True
 
