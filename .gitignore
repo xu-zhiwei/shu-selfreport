@@ -6,4 +6,4 @@ __pycache
 .vscode
 */.DS_Store
 .DS_Store
-config.txt
+*/config.txt

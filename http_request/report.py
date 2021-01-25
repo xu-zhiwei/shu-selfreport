@@ -30,7 +30,7 @@ def get_session(config):
     return sess, state
 
 
-def send_email(config, cur_date, is_morning):
+def send_email(config, cur_date):
     """
     发送填报成功的邮件
     :param config:
@@ -43,8 +43,8 @@ def send_email(config, cur_date, is_morning):
     hostname = config['send_email_hostname']  # smtp服务器地址
     login = config['send_email_id']  # 发送邮箱的用户名
     password = config['send_email_password']  # 发送邮箱的密码，即开启smtp服务得到的授权码
-    subject = '%s%s - %s - 填报成功！' % (cur_date, '上午' if is_morning else '下午', config['student_id'])  # 邮件主题
-    text = '%s%s - %s - 填报成功！' % (cur_date, '上午' if is_morning else '下午', config['student_id'])  # 邮件正文内容
+    subject = '%s%s - 填报成功！' % (cur_date, config['student_id'])  # 邮件主题
+    text = '%s%s - 填报成功！' % (cur_date, config['student_id'])  # 邮件正文内容
 
     smtp = SMTP_SSL(hostname)  # SMTP_SSL默认使用465端口
     smtp.login(login, password)
@@ -58,7 +58,7 @@ def send_email(config, cur_date, is_morning):
     smtp.quit()
 
 
-def report(config, cur_date, is_morning):
+def report(config, cur_date):
     """
     根据具体的日期、上午还是下午来填报信息
     :param config:
@@ -68,8 +68,7 @@ def report(config, cur_date, is_morning):
     """
     # 准备好要填报的session和url
     sess, state = get_session(config)
-    t = '1' if is_morning else '2'
-    url = 'https://selfreport.shu.edu.cn/XueSFX/HalfdayReport.aspx?day=%s&t=%s' % (cur_date, t)
+    url = 'https://selfreport.shu.edu.cn/DayReport.aspx'
 
     # 跳转到健康之路
     while True:
@@ -86,7 +85,7 @@ def report(config, cur_date, is_morning):
     # 获取view_state和f_state
     soup = BeautifulSoup(r.text, 'html.parser')
     view_state = soup.find('input', attrs={'name': '__VIEWSTATE'})['value']
-    f_state = get_f_state(cur_date, t)
+    f_state = get_f_state(cur_date)
 
     # 填报
     while True:
@@ -94,25 +93,37 @@ def report(config, cur_date, is_morning):
             r = sess.post(url, data={
                 '__EVENTTARGET': 'p1$ctl00$btnSubmit',
                 '__VIEWSTATE': view_state,
-                '__VIEWSTATEGENERATOR': 'DC4D08A3',
+                '__VIEWSTATEGENERATOR': '7AD7E509',
                 'p1$ChengNuo': 'p1_ChengNuo',
                 'p1$BaoSRQ': cur_date,
                 'p1$DangQSTZK': '良好',
-                'p1$TiWen': '37',
-                'p1$ZaiXiao': '宝山',
+                'p1$TiWen': '',
+                'p1$JiuYe_ShouJHM': '',
+                'p1$JiuYe_Email': '',
+                'p1$JiuYe_Wechat': '',
+                'p1$QiuZZT': '',
+                'p1$JiuYKN': '',
+                'p1$JiuYSJ': '',
+                'p1$ZaiXiao': '不在校',
+                'p1$MingTDX': '不到校',
+                'p1$BanChe_1$Value:': '0',
+                'p1$BanChe_1': '不需要乘班车',
+                'p1$BanChe_2$Value': '0',
+                'p1$BanChe_2': '不需要乘班车',
+                'p1$GuoNei': '国内',
+                'p1$ddlGuoJia$Value': '-1',
+                'p1$ddlGuoJia': '选择国家',
+                'p1$ShiFSH': '是',
+                'p1$ShiFZX': '否',
                 'p1$ddlSheng$Value': '上海',
                 'p1$ddlSheng': '上海',
                 'p1$ddlShi$Value': '上海市',
                 'p1$ddlShi': '上海市',
-                'p1$ddlXian$Value': '宝山区',
-                'p1$ddlXian': '宝山区',
+                'p1$ddlXian$Value': config['xian'],
+                'p1$ddlXian': config['xian'],
+                'p1$XiangXDZ': config['address'],
                 'p1$FengXDQDL': '否',
                 'p1$TongZWDLH': '否',
-                'p1$XiangXDZ': '上海大学',
-                'p1$QueZHZJC$Value': '否',
-                'p1$QueZHZJC': '否',
-                'p1$DangRGL': '否',
-                'p1$GeLDZ': '',
                 'p1$CengFWH': '否',
                 'p1$CengFWH_RiQi': '',
                 'p1$CengFWH_BeiZhu': '',
@@ -122,13 +133,23 @@ def report(config, cur_date, is_morning):
                 'p1$TuJWH': '否',
                 'p1$TuJWH_RiQi': '',
                 'p1$TuJWH_BeiZhu': '',
+                'p1$QueZHZJC$Value': '否',
+                'p1$QueZHZJC': '否',
+                'p1$DangRGL': '否',
+                'p1$GeLDZ': '',
+                'p1$FanXRQ': '',
+                'p1$WeiFHYY': '',
+                'p1$ShangHJZD': '',
+                'p1$DaoXQLYGJ': '否',
+                'p1$DaoXQLYCS': '否',
                 'p1$JiaRen_BeiZhu': '',
                 'p1$SuiSM': '绿色',
                 'p1$LvMa14Days': '是',
                 'p1$Address2': '',
+                'F_TARGET': 'p1_ctl00_btnSubmit',
+                'p1_ContentPanel1_Collapsed': 'true',
                 'p1_GeLSM_Collapsed': 'false',
                 'p1_Collapsed': 'false',
-                'F_TARGET': 'p1_ctl00_btnSubmit',
                 'F_STATE': f_state
             }, headers={
                 'X-Requested-With': 'XMLHttpRequest',
@@ -143,45 +164,37 @@ def report(config, cur_date, is_morning):
     return any(i in r.text for i in ['提交成功', '历史信息不能修改', '现在还没到晚报时间', '只能填报当天或补填以前的信息'])
 
 
-def half_day_report(config, cur_date, is_morning) -> bool:
+def daily_report(config, cur_date) -> bool:
     count = 0
-    while not report(config, cur_date, is_morning):
+    while not report(config, cur_date):
         time.sleep(2 * 60)  # 如果未成功，隔两分钟之后再填报一次
         count += 1
         if count == 10:  # 如果连报10次均为成功，中断程序运行，防止bug
             return False
-    print('%s%s - %s - 填报成功！' % (cur_date, '上午' if is_morning else '下午', config['student_id']))
-    send_email(config, cur_date, is_morning)
+    print('%s%s - 填报成功！' % (cur_date, config['student_id']))
+    send_email(config, cur_date)
     return True
 
 
 def automatic_report(config):
-    morning_ok, evening_ok = False, False
+    ok = False
     cur_day = get_cur_time().day
 
     while True:
         # 填报时间：上午8:00和晚上8:00
         cur_time = get_cur_time()
         cur_date = cur_time.strftime('%Y-%m-%d')
-        is_morning = cur_time.hour < 20
 
         # 如果上午的还未填报，且已经到了填报时间
-        if not morning_ok and 8 <= cur_time.hour < 20:
-            if half_day_report(config, cur_date, is_morning):
-                morning_ok = True
-            else:
-                break
-
-        # 如果下午的还未填报，且已经到了填报时间
-        if not evening_ok and cur_time.hour >= 20:
-            if half_day_report(config, cur_date, is_morning):
-                evening_ok = True
+        if not ok and 8 <= cur_time.hour:
+            if daily_report(config, cur_date):
+                ok = True
             else:
                 break
 
         # 次日，重新填报
         if cur_day != cur_time.day:
             cur_day = cur_time.day
-            morning_ok, evening_ok = False, False
+            ok = False
 
         time.sleep(60 * 5)  # 检测频率为5分钟
