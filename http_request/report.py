@@ -85,7 +85,7 @@ def report(config, cur_date):
     # 获取view_state和f_state
     soup = BeautifulSoup(r.text, 'html.parser')
     view_state = soup.find('input', attrs={'name': '__VIEWSTATE'})['value']
-    f_state = get_f_state(cur_date)
+    f_state = get_f_state(cur_date, config['xian'], config['address'])
 
     # 填报
     while True:
@@ -104,12 +104,6 @@ def report(config, cur_date):
                 'p1$QiuZZT': '',
                 'p1$JiuYKN': '',
                 'p1$JiuYSJ': '',
-                'p1$ZaiXiao': '不在校',
-                'p1$MingTDX': '不到校',
-                'p1$BanChe_1$Value:': '0',
-                'p1$BanChe_1': '不需要乘班车',
-                'p1$BanChe_2$Value': '0',
-                'p1$BanChe_2': '不需要乘班车',
                 'p1$GuoNei': '国内',
                 'p1$ddlGuoJia$Value': '-1',
                 'p1$ddlGuoJia': '选择国家',
@@ -122,6 +116,7 @@ def report(config, cur_date):
                 'p1$ddlXian$Value': config['xian'],
                 'p1$ddlXian': config['xian'],
                 'p1$XiangXDZ': config['address'],
+                'p1$ShiFZJ': '是',
                 'p1$FengXDQDL': '否',
                 'p1$TongZWDLH': '否',
                 'p1$CengFWH': '否',
@@ -146,7 +141,6 @@ def report(config, cur_date):
                 'p1$SuiSM': '绿色',
                 'p1$LvMa14Days': '是',
                 'p1$Address2': '',
-                'F_TARGET': 'p1_ctl00_btnSubmit',
                 'p1_ContentPanel1_Collapsed': 'true',
                 'p1_GeLSM_Collapsed': 'false',
                 'p1_Collapsed': 'false',
